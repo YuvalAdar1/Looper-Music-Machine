@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Moveo Looper Task </title>
+<style>
+.trackbar{ display:flex; direction:row;padding:10px ;align-items: center ; background:#DDD; height:74px; font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; }
+.trackbar:nth-child(1) { background:rgb(247, 246, 245); }
+.trackbar:nth-child(2) { background:rgb(219, 14, 14); }
+.trackbar:nth-child(3) { background:rgb(243, 219, 6); }
+.trackbar:nth-child(4) { background:rgb(1, 240, 21); }
+.trackbar:nth-child(5) { background:rgb(0, 4, 248); }
+.trackbar:nth-child(6) { background:rgb(252, 4, 169); }
+.trackbar:nth-child(7) { background:rgb(0, 255, 242); }
+.trackbar:nth-child(8) { background:rgb(0, 253, 169); }
+.trackbar:nth-child(9) { background:rgb(255, 0, 98); }
+.loopbutton{width:65px; height:67px;margin: 20px;background:url(images/ak_repeatbtn.png) no-repeat}
+.playbutton{ opacity:.8; display:block; float:left; width:60px; height:60px; background:url(images/ak_playbtn.png) no-repeat; border:none; cursor:pointer; outline:none; }
+.playbutton:hover{ opacity:1; }
+.trackname{ float:left; color:#000; font-size:20px; font-weight:bold; }
+</style>
+<script>
+function _(id){
+	return document.getElementById(id);
+}
+function audioApp(){
+	var audio = new Audio();
+	var audio_folder = "audio/";
+	var audio_ext = ".mp3";
+	var audio_index = 1;
+	var is_playing = false;
+	var is_loop = false;
+	var playingtrack;
+	var trackbox = _("trackbox");
+	var tracks = {
+		"track1":["_tambourine_shake_higher", "_tambourine_shake_higher"],
+	    "track2":["ALL TRACK", "AL L TRACK"],
+		"track3":["B VOC", "B VOC"],
+		"track4":["DRUMS", "DRUMS"],
+		"track5":["HE HE VOC","HE HE VOC"],
+		"track6":["HIGH VOC","HIGH VOC"],
+		"track7":["JIBRISH","JIBRISH"],
+		"track8":["LEAD 1","LEAD 1"],
+		"track9":["UUHO VOC","UUHO VOC"],
+
+	};
+	for(var track in tracks){
+		var trackBar = document.createElement("div");
+		var loopButton = document.createElement("button");
+		var playButton = document.createElement("button");
+		var trackName = document.createElement("div");
+		trackBar.className = "trackbar";
+		loopButton.className = "loopbutton";
+		playButton.className = "playbutton";
+		trackName.className = "trackname";
+		trackName.innerHTML = audio_index+". "+tracks[track][0];
+		loopButton.id = tracks[track][1]+'loop';
+		loopButton.is_loop = false;
+		loopButton.addEventListener("click", toggleLoop);
+		playButton.id = tracks[track][1];
+		playButton.addEventListener("click", switchTrack);
+		trackBar.appendChild(loopButton);
+		trackBar.appendChild(playButton);
+		trackBar.appendChild(trackName);
+		trackbox.appendChild(trackBar);
+		audio_index++;
+	}
+	audio.addEventListener("ended",function(){
+		if(!_(playingtrack + 'loop').is_loop){
+			_(playingtrack).style.background = "url(images/ak_playbtn.png)";
+		playingtrack = "";
+		is_playing = false;
+		}
+		else{
+			audio.play();
+		}
+	});
+	function switchTrack(event){
+		if(is_playing){
+		    if(playingtrack != event.target.id){
+			    is_playing = true;
+				_(playingtrack).style.background = "url(images/ak_playbtn.png)";
+			    event.target.style.background = "url(images/ak_pausebtn.png)";
+			    audio.src = audio_folder+event.target.id+audio_ext;
+				audio.play();
+			} else {
+			    audio.pause();
+			    is_playing = false;
+				event.target.style.background = "url(images/ak_playbtn.png)";
+			}
+		} else {
+			is_playing = true;
+			event.target.style.background = "url(images/ak_pausebtn.png)";
+			if(playingtrack != event.target.id){
+				audio.src = audio_folder+event.target.id+audio_ext;
+			}
+			audio.play();
+		}
+		playingtrack = event.target.id;
+	}
+	function toggleLoop(event){
+		if(event.target.is_loop)
+		{
+			event.target.is_loop = false;
+			event.target.style.background = "url(images/ak_repeatbtn.png)";
+		}
+		else {
+			event.target.is_loop = true;
+			event.target.style.background = "url(images/ak_norepeatbtn.jpeg)";
+		}
+	}
+}
+
+window.addEventListener("load", audioApp);
+</script>
+</head>
+<body>
+  <div id="trackbox"></div>
+</body>
+</html>
